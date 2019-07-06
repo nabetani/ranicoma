@@ -11,9 +11,37 @@ module Ranicoma
       LINE = 1.0/30
       MINSIZE = LINE*2
       COLS= %i( red blue yellow green )
+      COLMAKERS=[]
 
       def create_cols
-        (COLS*3).shuffle(random:rng).take(COLS.size*2).flat_map{ |e|
+        send COLMAKERS.sample(random:rng)
+      end
+
+      COLMAKERS<<
+      def rainbow_cols
+        colcount = rng.rand(3..7)
+        base = rng.rand(100.0)
+        cols = Array.new(colcount){ |ix| rainbow( ix*3.0/colcount+base+rng.rand(3.0/colcount) ) }
+        cols.flat_map{ |e|
+          [e] + [:white]*rng.rand(2)
+        }
+      end
+
+      COLMAKERS<<
+      def pale_cols
+        colcount = rng.rand(3..7)
+        base = rng.rand(100.0)
+        f = ->(x){ x/2+0.5 }
+        ( Array.new(colcount){ |ix| 
+          rainbow( ix*3.0/colcount+base+rng.rand(3.0/colcount), f ) 
+        } + [[40]*3, :white] ).shuffle( random:rng )
+      end
+
+      COLMAKERS<<
+      def basic_cols
+        colcount = rng.rand(3..7)
+        cols=%i(red green blue yellow cyan magenta green).shuffle.take(colcount)
+        cols.flat_map{ |e|
           [e] + [:white]*rng.rand(2)
         }
       end

@@ -50,7 +50,7 @@ module Ranicoma
           t = (t1-t0)*ix*1.0/arc + t0
           [Math.cos(t)*r+0.5, Math.sin(t)*r+0.5]
         }
-        bc = col( theta*3/(Math::PI*2) + @ct0 )
+        bc = rainbow( theta*3/(Math::PI*2) + @ct0 )
         dists=make_dists(body_rng, 0, 0.5, 3).flatten
         clip_id = Random.new_seed
         [
@@ -89,22 +89,8 @@ module Ranicoma
         }
       end
 
-      def col(t,mx=->(v){v})
-        f = lambda{ |t0|
-          v = lambda{ |t|
-            case t
-            when 0..1 then t
-            when 1..2 then 2-t
-            else 0
-            end
-          }[t0 % 3]
-          (mx[v]*255).round
-        }
-        [f[t],f[t+1],f[t+2]]
-      end
-
       def create
-        basecol = col(rng.rand(Math::PI*2), ->(v){ (v+3)/4.0 } )
+        basecol = rainbow(rng.rand(Math::PI*2), ->(v){ (v+3)/4.0 } )
         [
           element("circle", cx:0.5, cy:0.5, r:0.4, **fill(basecol) )
         ]+Array.new(count){ |ix|

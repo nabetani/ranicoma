@@ -12,6 +12,20 @@ module Ranicoma
         @subclasses.push(cls)
       end
 
+      def rainbow(t,mx=->(v){v})
+        f = lambda{ |t0|
+          v = lambda{ |t|
+            case t
+            when 0..1 then t
+            when 1..2 then 2-t
+            else 0
+            end
+          }[t0 % 3]
+          (mx[v]*255).round
+        }
+        [f[t],f[t+1],f[t+2]]
+      end
+
       def Base.subclasses
         @subclasses
       end
