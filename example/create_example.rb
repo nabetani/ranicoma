@@ -15,7 +15,7 @@ def main
   formatter = REXML::Formatters::Pretty.new
   100.times do |ix|
     body = "#{ix}.svg"
-    s.push( File.join(DIRNAME, body) )
+    s.push({ seed:ix, fn:File.join(DIRNAME, body)})
     File.open( File.join(ICONS_DIR, body), "w" ) do |f|
       c=Ranicoma::Creator.new(ix, 100)
       formatter.write(c.create, f)
@@ -28,12 +28,16 @@ def main
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="Content-Language" content="ja-JP">
         <style>
+          body{ background-color: #eee }
           img{ padding: 4px 4px 4px 4px; }
+          .img{ display: inline-block; background-color:white; margin-bottom:5pt; }
         </style>
       </head>
     HTML_HEAD
     s.each do |e|
-      f.puts( "<img src='#{e}'/>" )
+      f.puts( <<~IMG )
+        <div class="img">seed=#{e[:seed]}<br/><img src='#{e[:fn]}'/></div>
+      IMG
     end
   end
 end
