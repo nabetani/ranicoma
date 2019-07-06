@@ -17,16 +17,12 @@ module Ranicoma
     attr_reader(:doc)
 
     def create
+      design = Design::Base.subclasses.sample( random:rng ).new(rng)
       doc << (
         element("svg", xmlns:"http://www.w3.org/2000/svg", height:"#{size}px", width:"#{size}px", viewBox:"0 0 1 1" ){
-          element("rect", height:1, width:1, style:"fill:rgb(255,0,0)")
+          design.create
         }
       )
-    end
-
-    def write_to(io)
-      doc.write(io, 2)
-      io.puts
     end
   end
 end

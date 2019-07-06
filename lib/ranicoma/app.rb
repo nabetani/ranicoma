@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'rexml/formatters/pretty'
 
 module Ranicoma
   class App
@@ -17,9 +18,10 @@ module Ranicoma
     def run
       option=get_option
       seed = option[:seed] || Random.new_seed
-      c=Creator.new(seed, option[:size])
-      c.create
-      c.write_to($stdout)
+      size = option[:size] || 100
+      formatter = REXML::Formatters::Pretty.new
+      c=Ranicoma::Creator.new(seed, size)
+      formatter.write(c.create, $stdout)
     end
   end
 end
