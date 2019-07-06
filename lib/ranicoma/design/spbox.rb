@@ -13,7 +13,7 @@ module Ranicoma
       COLS= %i( red blue yellow green )
 
       def create_cols
-        (COLS*3).shuffle.take(COLS.size*2).flat_map{ |e|
+        (COLS*3).shuffle(random:rng).take(COLS.size*2).flat_map{ |e|
           [e] + [:white]*rng.rand(2)
         }
       end
