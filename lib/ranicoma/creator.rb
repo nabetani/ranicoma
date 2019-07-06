@@ -33,7 +33,7 @@ module Ranicoma
 
     def create
       doc << (
-        element("svg", xmlns:"http://www.w3.org/2000/svg", height:"400px", width:"400px", viewBox:"0 0 1 1" ){
+        element("svg", xmlns:"http://www.w3.org/2000/svg", height:"#{size}px", width:"#{size}px", viewBox:"0 0 1 1" ){
           element("rect", height:1, width:1, style:"fill:rgb(255,0,0)")
         }
       )
