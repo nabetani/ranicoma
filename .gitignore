@@ -9,6 +9,17 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+
+# rspec failure tracking
+.rspec_status
 
 # Used by dotenv library to load environment variables.
 # .env
