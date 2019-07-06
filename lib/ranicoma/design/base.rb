@@ -44,6 +44,10 @@ module Ranicoma
 
       attr_reader(:rng)
 
+      def rand(*args)
+        rng.rand(*args)
+      end
+
       def rectpos(rc)
         { x:rc.x, y:rc.y, width:rc.w, height:rc.h }
       end
