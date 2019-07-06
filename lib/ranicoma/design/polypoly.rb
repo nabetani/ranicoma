@@ -32,27 +32,30 @@ module Ranicoma
       end
 
       def poly(center, r)
-        psize = rng.rand(6..12)
-        delta = Math::PI*2/psize/3
+        psize = rng.rand(6..20)
+        delta = Math::PI*2/psize*0.7
         dirs = Array.new(psize){ |ix| Math::PI*2*ix / psize + rng.rand(delta) }
         outer = dirs.map{ |e|
           [Math.cos(e)*r+center[0], Math.sin(e)*r+center[1]]
         }
         edelta = rng.rand(-0.2..0.2) * Math::PI*2
         ri = r * rng.rand(0.2..0.5)
+        cd = rng.rand(Math::PI)
+        rdelta = rng.rand((r-ri-LINE)*0.8)
+        inner_cx = center[0] + Math.cos(cd)*rdelta
+        inner_cy = center[1] + Math.sin(cd)*rdelta
         inner = dirs.map{ |e|
           t = e + edelta
-          [Math.cos(t)*ri+center[0], Math.sin(t)*ri+center[1]]
+          [Math.cos(t)*ri+inner_cx, Math.sin(t)*ri+inner_cy]
         }
         use = Array.new(inner.size){ rng.rand<0.8 }
         cols = rand_rotate(colors(use.count(true)))
-        colbase = rng.rand(inner.size)
         center_poly = element( "polygon",
           points:points_str(inner),
-          **fill(%i(black white).sample( random:rng)),
+          **fill(%i(black white gray).sample( random:rng)),
           **stroke(:black, LINE),
           "stroke-linejoin": :round )
-    Array.new( outer.size ){ |ix|
+        Array.new( outer.size ){ |ix|
           if ! use[ix]
             []
           else
@@ -62,7 +65,8 @@ module Ranicoma
               inner[(ix+1) % psize],
               inner[ix % psize]
             ]
-            element( "polygon",
+            element(
+              "polygon",
               points:points_str(pts),
               **fill(cols.pop),
               **stroke(:black, LINE),
@@ -70,9 +74,10 @@ module Ranicoma
           end
         } + [center_poly]
       end
+
       def create
         [
-          poly([0.5,0.5], 0.5-LINE)
+          poly([0.5,0.5],0.5-LINE)
         ].flatten
       end
     end
