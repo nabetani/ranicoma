@@ -10,10 +10,6 @@ module Ranicoma
     class PolyPoly < Base
       LINE = 1.0/30
 
-      def points_str(pts)
-        pts.map{ |e| e.join(",") }.join(" ")
-      end
-
       def colors(n)
         f = lambda{ |t0|
           v = lambda{ |t|

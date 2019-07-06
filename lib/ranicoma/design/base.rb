@@ -20,6 +20,10 @@ module Ranicoma
         @rng=rng
       end
 
+      def points_str(pts)
+        pts.map{ |e| e.join(",") }.join(" ")
+      end
+
       def rect_element(rc, col)
         element("rect", **rectpos(rc), **fill(col))
       end
@@ -48,6 +52,8 @@ module Ranicoma
 
       def stroke(col, w)
         c=case col
+        when Array
+          "rgb(#{col.join(",")})"
         when /^\d+\,\d+\,\d+$/
           "rgb(#{col})"
         else
