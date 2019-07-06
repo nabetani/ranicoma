@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require 'rexml/document'
+require "ranicoma/util"
 
 module Ranicoma
   class Creator
+    include Util
     def initialize( seed, size )
       @rng=Random.new(seed)
       @size=size
@@ -13,23 +15,6 @@ module Ranicoma
     attr_reader(:rng)
     attr_reader(:size)
     attr_reader(:doc)
-
-    def element(name, opt)
-      r=opt.each.with_object(REXML::Element.new(name)) do |(k,v),e|
-        e.add_attribute(k.to_s, v.to_s)
-      end
-      if block_given?
-        children = yield
-        if children.is_a?(Array)
-          children.each do |ch|
-            r.add_element(ch)
-          end
-        else
-          r.add_element(children)
-        end
-      end
-      r
-    end
 
     def create
       doc << (
