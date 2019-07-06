@@ -30,13 +30,30 @@ module Ranicoma
         { x:rc.x, y:rc.y, width:rc.w, height:rc.h }
       end
 
+      def rand_rotate(ary)
+        ix=rng.rand(ary.size)
+        ary[ix,ary.size-ix] + ary[0,ix]
+      end
+
       def fill(col)
         case col
+        when Array
+          { style:"fill:rgb(#{col.join(",")})" }
         when /^\d+\,\d+\,\d+$/
           { style:"fill:rgb(#{col})" }
         else
           { style:"fill:#{col}" }
         end
+      end
+
+      def stroke(col, w)
+        c=case col
+        when /^\d+\,\d+\,\d+$/
+          "rgb(#{col})"
+        else
+          col
+        end
+        { stroke:c, "stroke-width":w }
       end
 
       def Base.inherited(subclass)
