@@ -81,3 +81,6 @@ Style/ParallelAssignment:
 
 Style/NumericPredicate:
   Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
