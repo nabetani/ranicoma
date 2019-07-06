@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
 
+  version = Ranicoma::VERSION
+
   spec.metadata["source_code_uri"] = "https://github.com/nabetani/ranicoma/tree/v#{version}/ranicoma"
   spec.metadata["changelog_uri"] = "https://github.com/nabetani/ranicoma/tree/v#{version}/CHANGELOG.md"
 
