@@ -29,7 +29,12 @@ module Ranicoma
         @cols[ @col_ix ]
       end
 
-      def hsubbox( rc )
+      def fill?(depth)
+        prob = [0.1, 0.4][depth] || 0.6
+        rng.rand < prob
+      end
+
+      def hsubbox( rc, depth )
         ratio=rng.rand(0.3..0.7)
         rest = (rc.w - LINE)
         return rect_element(rc, randcol) if rest<MINSIZE
@@ -38,12 +43,12 @@ module Ranicoma
         rc_l = Rect.new( rc.x, rc.y, left, rc.h )
         rc_r = Rect.new( rc.right-right, rc.y, right, rc.h )
         [
-          ( rng.rand<0.5 ? rect_element(rc_l, randcol) : vsubbox(rc_l) ),
-          ( rng.rand<0.5 ? rect_element(rc_r, randcol) : vsubbox(rc_r) )
+          ( fill?(depth) ? rect_element(rc_l, randcol) : vsubbox(rc_l, depth+1) ),
+          ( fill?(depth) ? rect_element(rc_r, randcol) : vsubbox(rc_r, depth+1) )
         ]
       end
 
-      def vsubbox( rc )
+      def vsubbox( rc, depth )
         ratio=rng.rand(0.3..0.7)
         rest = (rc.h - LINE)
         return rect_element(rc, randcol) if rest<MINSIZE
@@ -52,8 +57,8 @@ module Ranicoma
         rc_t = Rect.new( rc.x, rc.y, rc.w, top )
         rc_b = Rect.new( rc.x, rc.bottom-bottom, rc.w, bottom)
         [
-          ( rng.rand<0.5 ? rect_element(rc_t, randcol) : hsubbox(rc_t) ),
-          ( rng.rand<0.5 ? rect_element(rc_b, randcol) : hsubbox(rc_b) )
+          ( fill?(depth) ? rect_element(rc_t, randcol) : hsubbox(rc_t, depth+1 ) ),
+          ( fill?(depth) ? rect_element(rc_b, randcol) : hsubbox(rc_b, depth+1 ) )
         ]
       end
 
@@ -64,9 +69,9 @@ module Ranicoma
           element("rect", height:1, width:1, **fill(:black)),
           case dir
           when :h
-            hsubbox(total)
+            hsubbox(total, 0)
           when :v
-            vsubbox(total)
+            vsubbox(total, 0)
           end
         ].flatten
       end
