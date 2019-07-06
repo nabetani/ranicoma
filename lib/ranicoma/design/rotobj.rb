@@ -7,8 +7,8 @@ require "ranicoma/rect"
 
 module Ranicoma
   module Design
-    LINE = 1.0/80
     class RotObj < Base
+      LINE = 1.0/80
       def initialize(rng)
         super
         @ct0 = rng.rand(Math::PI*2)
