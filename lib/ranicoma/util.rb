@@ -15,7 +15,7 @@ module Ranicoma
       if block_given?
         children = yield
         if children.is_a?(Array)
-          children.each do |ch|
+          children.flatten.each do |ch|
             r.add_element(ch)
           end
         else
