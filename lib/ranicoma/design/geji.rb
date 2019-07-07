@@ -15,13 +15,15 @@ module Ranicoma
         super
         @line_width = 1.0/80
         @projsize = rand(0.1..0.3)
-        @projpattern = rand(1..15)
         @center_rc = Rect.new( projsize, projsize, 1-projsize*2, 1-projsize*2 )
+      end
+
+      def proj_attr
+        fill(rainbow(rand(3.0))).merge(stroke(:black, line_width))
       end
 
       attr_reader(:line_width)
       attr_reader(:projsize)
-      attr_reader(:projpattern)
       attr_reader(:center_rc)
 
       def center_rect
@@ -31,13 +33,128 @@ module Ranicoma
           **fill(:gray), **stroke(:black, line_width) )
       end
 
+      def shorten_rc(rc)
+        d = rand(rc.h/2)
+        Rect.new( rc.x, rc.y+d, rc.w, rc.h-d )
+      end
+
+      def bezier(rc, corners)
+        q = corners.each_cons(2).map{ |(x0,y0),(x1,y1)|
+          mx = (x0+x1)/2.0
+          my = (y0+y1)/2.0
+          "Q #{x0} #{y0} #{mx} #{my} "
+        }
+        path = <<~PATH
+          M #{rc.x} #{rc.bottom}
+          #{q.join}
+          L #{corners.last.join(" ")}
+          L #{rc.x} #{rc.bottom}
+        PATH
+        element( "path", d:path, **proj_attr )
+      end
+
+      PROJ_METHODS<<
+      def bezier0(rc0)
+        rc = shorten_rc(rc0)
+        y0 = rc.y + rc.h*(2.0/3)
+        y1 = rc.y + rc.h*(1.0/3)
+        corners = [
+          [ rc.x, rc.bottom ],
+          [ rc.x, y0 ],
+          [ rc.cx, y0 ],
+          [ rc.cx, y1 ],
+          [ rc.x, y1 ],
+          [ rc.x, rc.y ],
+          [ rc.right, rc.y ],
+          [ rc.right, rc.bottom ],
+        ]
+        if rand(2)==0
+          bezier(rc, corners.map{ |x,y| [rc.cx*2-x, y] } )
+        else
+          bezier(rc, corners)
+        end
+      end
+
+      PROJ_METHODS<<
+      def bezier1(rc0)
+        rc = shorten_rc(rc0)
+        y0 = rc.y + rc.h*(2.0/3)
+        y1 = rc.y + rc.h*(1.0/3)
+        corners = [
+          [ rc.x, rc.bottom ],
+          [ rc.x, y0 ],
+          [ rc.cx, y0 ],
+          [ rc.x, y0 ],
+          [ rc.x, y1 ],
+          [ rc.cx, y1 ],
+          [ rc.x, y1 ],
+          [ rc.x, rc.y ],
+          [ rc.right, rc.y ],
+          [ rc.right, rc.bottom ],
+        ]
+        if rand(2)==0
+          bezier(rc, corners.map{ |x,y| [rc.cx*2-x, y] } )
+        else
+          bezier(rc, corners)
+        end
+      end
+
+      PROJ_METHODS<<
+      def bezier2(rc0)
+        rc = shorten_rc(rc0)
+        y0 = rc.y + rc.h*(2.0/3)
+        y1 = rc.y + rc.h*(1.0/3)
+        corners = [
+          [ rc.x, rc.bottom ],
+          [ rc.x, y0 ],
+          [ rc.cx, y0 ],
+          [ rc.x, y0 ],
+          [ rc.x, y1 ],
+          [ rc.cx, y1 ],
+          [ rc.x, y1 ],
+          [ rc.x, rc.y ],
+          [ rc.right, rc.y ],
+          [ rc.right, y1 ],
+          [ rc.cx, y1 ],
+          [ rc.right, y1 ],
+          [ rc.right, y0 ],
+          [ rc.cx, y0 ],
+          [ rc.right, y0 ],
+          [ rc.right, rc.bottom ],
+        ]
+        bezier(rc, corners)
+      end
+
+      PROJ_METHODS<<
+      def bezier2(rc0)
+        rc = shorten_rc(rc0)
+        y0 = rc.y + rc.h*0.9
+        y1 = rc.y + rc.h*(1.0/3)
+        x0 = rc.x + rc.w*0.4
+        x1 = rc.x + rc.w*0.6
+        corners = [
+          [ rc.x, rc.bottom ],
+          [ rc.x, y0 ],
+          [ x0, y0 ],
+          [ x0, y1 ],
+          [ rc.x, y1 ],
+          [ rc.x, rc.y ],
+          [ rc.right, rc.y ],
+          [ rc.right, y1 ],
+          [ x1, y1 ],
+          [ x1, y0 ],
+          [ rc.right, y0 ],
+          [ rc.right, rc.bottom ],
+        ]
+        bezier(rc, corners)
+      end
+
       PROJ_METHODS<<
       def box_proj(rc0)
-        d = rand(rc0.h/2)
-        rc = Rect.new( rc0.x, rc0.y+d, rc0.w, rc0.h-d )
+        rc = shorten_rc(rc0)
         element( "rect",
           **rectpos(rc),
-          **fill(:gray), **stroke(:black, line_width) )
+          **proj_attr )
       end
 
       PROJ_METHODS<<
@@ -48,15 +165,16 @@ module Ranicoma
         element( "rect",
           **rectpos(rc),
           rx:rx,
-          **fill(:gray), **stroke(:black, line_width) )
+          **proj_attr )
       end
 
       PROJ_METHODS<<
-      def triangle_proj(rc)
+      def triangle_proj(rc0)
+        rc = shorten_rc(rc0)
         points = [ [rc.cx,rc.y], [rc.x, rc.bottom], [rc.right, rc.bottom] ]
         element("polygon",
           points:points_str(points),
-          **fill(:yellow), **stroke(:black, line_width),
+          **proj_attr,
           "stroke-linejoin": :round )
       end
 
@@ -70,10 +188,10 @@ module Ranicoma
           e.y=line_width
           e.h = projsize
         }
-        pat = rand(1..(2**count-1)) | rand(1..(2**count-1))
+        pattern = rand(1..2**count-1) | rand(1..2**count-1)
         element("g", transform:rot ){
           Array.new(count){ |ix|
-            if pat[ix]==0
+            if pattern[ix]==0
               []
             else
               send PROJ_METHODS.sample(random:rng), proj_rects[ix]
@@ -85,7 +203,7 @@ module Ranicoma
       def create
         [
           Array.new(4){ |pos|
-            projpattern[pos]!=0 ? projects(pos) : []
+            projects(pos)
           },
           center_rect
         ].flatten
