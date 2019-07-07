@@ -14,10 +14,10 @@ module Ranicoma
 
       def rainbow(t,mx=->(v){v})
         f = lambda{ |t0|
-          v = lambda{ |t|
-            case t
-            when 0..1 then t
-            when 1..2 then 2-t
+          v = lambda{ |x|
+            case x
+            when 0..1 then x
+            when 1..2 then 2-x
             else 0
             end
           }[t0 % 3]
