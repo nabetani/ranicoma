@@ -40,7 +40,7 @@ module Ranicoma
       COLMAKERS<<
       def basic_cols
         colcount = rng.rand(3..7)
-        cols=%i(red green blue yellow cyan magenta green).shuffle.take(colcount)
+        cols=%i(red green blue yellow cyan magenta green).shuffle( random:rng ).take(colcount)
         cols.flat_map{ |e|
           [e] + [:white]*rng.rand(2)
         }
