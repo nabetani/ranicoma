@@ -26,11 +26,46 @@ module Ranicoma
       attr_reader(:projsize)
       attr_reader(:center_rc)
 
+      def eqcolors(n)
+        base=rand(3.0)
+        Array.new(n){ |ix|
+          rainbow(base+3.0*ix/n)
+        }
+      end
       def center_rect
-        element( "rect",
-          **rectpos(center_rc),
-          rx:line_width*3,
-          **fill(:gray), **stroke(:black, line_width) )
+        gx = center_rc.w * rand(0.05..0.3)
+        gy = center_rc.h * rand(0.05..0.3)
+        w0 = (center_rc.w-gx*2)*rand(0.6..0.9)
+        h0 = (center_rc.h-gy*2)*rand(0.6..0.9)
+        w1 = (center_rc.w-gx*2)*rand(0.6..0.9)
+        h1 = (center_rc.h-gy*2)*rand(0.6..0.9)
+        subrects = if rand(2)==0
+          [
+            Rect.new( center_rc.x+gx, center_rc.y+gy, w0, h0 ),
+            Rect.new( center_rc.right-gx-w1, center_rc.bottom-gy-h1, w1, h1 ),
+          ]
+        else
+          [
+            Rect.new( center_rc.right-gx-w0, center_rc.y+gy, w0, h0 ),
+            Rect.new( center_rc.x+gx, center_rc.bottom-gy-h1, w1, h1 ),
+          ]
+        end.shuffle( random:rng )
+        if rand(2)==0
+          h = [h0, h1].min * rand(0.3..1.1)
+          w = [w0, w1].min * rand(0.3..1.1)
+          subrects.push( Rect.new( center_rc.cx-w/2, center_rc.cy-h/2, w, h ) )
+        end
+        cols = eqcolors(subrects.size+1)
+        makeattr=->(){
+          {
+            rx:line_width*3,
+            **fill(cols.pop),
+            **stroke(:black, line_width)
+          }
+        }
+        ([ center_rc  ]+subrects).map{ |rc|
+          element( "rect", **rectpos(rc), **makeattr[] )
+        }
       end
 
       def shorten_rc(rc)
