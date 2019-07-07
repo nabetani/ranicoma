@@ -161,7 +161,7 @@ module Ranicoma
       end
 
       PROJ_METHODS<<
-      def bezier2(rc0)
+      def bezier3(rc0)
         rc = shorten_rc(rc0)
         y0 = rc.y + rc.h*0.9
         y1 = rc.y + rc.h*(1.0/3)
