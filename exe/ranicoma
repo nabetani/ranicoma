@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
 require "ranicoma"
+require "ranicoma/app"
 
-Ranicoma.app.run
+Ranicoma::App.new.run
